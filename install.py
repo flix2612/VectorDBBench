@@ -2,11 +2,14 @@ import os
 import argparse
 import subprocess
 
+
 def docker_tag_base():
     return 'vdbbench'
 
+
 def dockerfile_path_base():
     return os.path.join('vectordb_bench/', '../Dockerfile')
+
 
 def docker_tag(track, algo):
     return docker_tag_base() + '-' + track + '-' + algo
@@ -21,13 +24,14 @@ def build(tag, args, dockerfile):
 
     try:
         command = 'docker build %s --rm -t %s -f' \
-                   % (q, tag)
+                  % (q, tag)
         command += ' %s .' % dockerfile
         print(command)
         subprocess.check_call(command, shell=True)
         return {tag: 'success'}
     except subprocess.CalledProcessError:
         return {tag: 'fail'}
+
 
 def build_multiprocess(args):
     return build(*args)
@@ -60,13 +64,20 @@ if __name__ == "__main__":
         '--build-arg',
         help='pass given args to all docker builds',
         nargs="+")
+    parser.add_argument(
+        '--architecture',
+        help='linux/arm64 or linux/amd64 (defaults to arm64)',
+        nargs="+")
     args = parser.parse_args()
 
-    print('Building base image...')
 
-    subprocess.check_call(
-        'docker buildx build --platform linux/amd64 \
-        --rm -t %s -f %s .' % (docker_tag_base(), dockerfile_path_base()), shell=True)
+    if args.architecture == "amd64":
+        print('Building base image for linux/amd64 architecture...')
+        subprocess.check_call('docker buildx build --platform linux/amd64 \
+            --rm -t %s -f %s .' % (docker_tag_base(), dockerfile_path_base()), shell=True)
+    else:
+        print('Building base image for linux/arm64 architecture...')
+        subprocess.check_call('docker buildx build --platform linux/arm64 \
+            --rm -t %s -f %s .' % (docker_tag_base(), dockerfile_path_base()), shell=True)
 
     print('Building end.')
-
