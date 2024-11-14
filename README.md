@@ -16,15 +16,20 @@ pip install vectordb-bench
 ```
 
 **Install all database clients**
-
-``` shell
+```shell
 pip install vectordb-bench[all]
 ```
-**Install the specific database client**
 
+**Install the specific database client**
 ```shell
 pip install vectordb-bench[pinecone]
 ```
+
+**Run benchmark with local project**
+```shell
+python -m vectordb_bench.cli.vectordbbench 
+```
+
 All the database client supported
 
 | Optional database client | install command                             |
