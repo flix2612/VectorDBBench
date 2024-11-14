@@ -25,6 +25,7 @@ class DB(Enum):
     Milvus = "Milvus"
     ZillizCloud = "ZillizCloud"
     Pinecone = "Pinecone"
+    Elastic = "Elastic"
     ElasticCloud = "ElasticCloud"
     QdrantCloud = "QdrantCloud"
     WeaviateCloud = "WeaviateCloud"
@@ -53,6 +54,10 @@ class DB(Enum):
         if self == DB.Pinecone:
             from .pinecone.pinecone import Pinecone
             return Pinecone
+
+        if self == DB.Elastic:
+            from .elastic.elastic import Elastic
+            return Elastic
 
         if self == DB.ElasticCloud:
             from .elastic_cloud.elastic_cloud import ElasticCloud
@@ -112,6 +117,10 @@ class DB(Enum):
         if self == DB.Pinecone:
             from .pinecone.config import PineconeConfig
             return PineconeConfig
+
+        if self == DB.Elastic:
+            from .elastic.config import ElasticConfig
+            return ElasticConfig
 
         if self == DB.ElasticCloud:
             from .elastic_cloud.config import ElasticCloudConfig

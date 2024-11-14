@@ -7,7 +7,7 @@ from .config import ElasticCloudIndexConfig
 from elasticsearch.helpers import bulk
 
 
-for logger in ("elasticsearch", "elastic_transport"):
+for logger in ("elastic", "elastic_transport"):
     logging.getLogger(logger).setLevel(logging.WARNING)
 
 log = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ class ElasticCloud(VectorDB):
 
     @contextmanager
     def init(self) -> None:
-        """connect to elasticsearch"""
+        """connect to elastic"""
         from elasticsearch import Elasticsearch
         self.client = Elasticsearch(**self.db_config, request_timeout=180)
 
@@ -77,7 +77,7 @@ class ElasticCloud(VectorDB):
         metadata: list[int],
         **kwargs,
     ) -> (int, Exception):
-        """Insert the embeddings to the elasticsearch."""
+        """Insert the embeddings to the elastic."""
         assert self.client is not None, "should self.init() first"
 
         insert_data = [
