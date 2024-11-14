@@ -1,6 +1,6 @@
 FROM python:3.11-buster as builder-image
 
-RUN apt-get update
+RUN apt-get update && apt-get install -y bash
 
 COPY install/requirements_py3.11.txt .
 RUN pip3 install -U pip
