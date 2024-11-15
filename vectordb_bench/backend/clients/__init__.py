@@ -175,6 +175,10 @@ class DB(Enum):
             from .zilliz_cloud.config import AutoIndexConfig
             return AutoIndexConfig
 
+        if self == DB.Elastic:
+            from .elastic.config import ElasticIndexConfig
+            return ElasticIndexConfig
+
         if self == DB.ElasticCloud:
             from .elastic_cloud.config import ElasticCloudIndexConfig
             return ElasticCloudIndexConfig
