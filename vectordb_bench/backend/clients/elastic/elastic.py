@@ -1,14 +1,12 @@
 import logging
-import time
 from contextlib import contextmanager
 from typing import Iterable
 
-from binascii import Error
-
-from ..api import VectorDB, DBCaseConfig
-from .config import ElasticConfig, ElasticIndexConfig
-from elasticsearch.helpers import bulk
 from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
+
+from .config import ElasticIndexConfig
+from ..api import VectorDB
 
 for logger in ("elastic", "elastic_transport"):
     logging.getLogger(logger).setLevel(logging.WARNING)
@@ -34,7 +32,6 @@ class Elastic(VectorDB):
         port = db_config.get("port")
         self.connection_url = f"http://{host}:{port}"
 
-        log.info(f"Connecting to Elasticsearch on {self.connection_url}")
         client = Elasticsearch(self.connection_url)
         log.info(f"Connected to {client.info()['name']}")
 
@@ -48,6 +45,7 @@ class Elastic(VectorDB):
     @contextmanager
     def init(self) -> None:
         self.client = Elasticsearch(self.connection_url)
+        log.info(f"Connected to {self.client.info()['name']}")
 
         yield
         self.client = None
@@ -63,22 +61,11 @@ class Elastic(VectorDB):
             }
         }
         try:
-            res = client.indices.create(index=self.index_name, mappings=mappings)
-            log.info(res)
+            client.indices.create(index=self.index_name, mappings=mappings)
             log.info(f"Created index {self.index_name}")
         except Exception as e:
             log.error(f"Failed creating index {self.index_name}: {e}")
             raise e
-
-    def _gen_data(self, embeddings: Iterable[list[float]]):
-        for i, embedding in enumerate(embeddings):
-            yield {
-                "_index": self.index_name,
-                "_source": {
-                    self.id_col_name: i,
-                    self.vector_col_name: embedding
-                }
-            }
 
     def insert_embeddings(
             self,
@@ -86,25 +73,22 @@ class Elastic(VectorDB):
             metadata: list[int],
             **kwargs,
     ) -> (int, Exception):
-        """Insert the embeddings to the elastic."""
-        assert self.client is not None, "should self.init() first"
-
-        insert_data = [
-            {
-                "_index": self.index_name,
-                "_source": {
-                    self.id_col_name: metadata[i],
-                    self.vector_col_name: embeddings[i],
-                },
-            }
-            for i in range(len(embeddings))
-        ]
+        def _gen_data():
+            for i, embedding in enumerate(embeddings):
+                yield {
+                    "_index": self.index_name,
+                    "_source": {
+                        self.id_col_name: metadata[i],
+                        self.vector_col_name: embedding
+                    }
+                }
         try:
-            bulk_insert_res = bulk(self.client, insert_data)
-            return (bulk_insert_res[0], None)
+            bulk_insert_res = bulk(self.client, _gen_data())
+            log.info(f"Inserted {bulk_insert_res} embeddings")
+            return bulk_insert_res[0], None
         except Exception as e:
-            log.warning(f"Failed to insert data: {self.indice} error: {str(e)}")
-            return (0, e)
+            log.warning(f"Failed to insert data: {self.index_name} error: {str(e)}")
+            raise e
 
     def search_embedding(
             self,
