@@ -19,8 +19,7 @@ class ElasticIndexConfig(BaseModel, DBCaseConfig):
 
     metric_type: MetricType | None = None
     efConstruction: int | None = None
-    M: int | None = None
-    num_candidates: int | None = None
+    m: int | None = None
 
     def parse_metric(self) -> str:
         if self.metric_type == MetricType.L2:
@@ -37,13 +36,11 @@ class ElasticIndexConfig(BaseModel, DBCaseConfig):
             "similarity": self.parse_metric(),
             "index_options": {
                 "type": self.index.value,
-                "m": self.M,
+                "m": self.m,
                 "ef_construction": self.efConstruction,
             },
         }
         return params
 
     def search_param(self) -> dict:
-        return {
-            "num_candidates": self.num_candidates,
-        }
+        pass
