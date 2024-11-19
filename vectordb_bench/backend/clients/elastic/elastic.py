@@ -116,7 +116,10 @@ class Elastic(VectorDB):
         }
 
         try:
-            response = self.client.search(index=self.index_name, query=query, size=k)
+            response = self.client.search(index=self.index_name,
+                                          query=query,
+                                          size=k,
+                                          _source=[self.id_col_name])
             return [h["_source"][self.id_col_name] for h in response["hits"]["hits"]]
         except Exception as e:
             log.warning(f"Failed to search: {self.index_name} error: {str(e)}")
