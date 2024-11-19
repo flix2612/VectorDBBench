@@ -1,0 +1,60 @@
+milvushnsw:
+  # Common configurations
+  case_type: Performance1536D50K
+  drop_old: True
+  load: True
+  search_serial: True
+  search_concurrent: False
+  num_concurrency: 1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100
+  concurrency_duration: 30
+  k: 50
+  # HNSW configurations
+  m: 16
+  ef_construction: 128
+  ef_search: 128
+  # Milvus configurations
+  db_label: milvushnsw
+  uri: http://localhost:19530
+
+pgvectorhnsw:
+  # Common configurations
+  case_type: Performance1536D50K
+  drop_old: True
+  load: True
+  search_serial: True
+  search_concurrent: False
+  num_concurrency: 1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100
+  concurrency_duration: 30
+  k: 50
+  # HNSW configurations
+  m: 16
+  ef_construction: 128
+  ef_search: 128
+  # pgvector configurations
+  db_label: pgvectorhnsw
+  user_name: vectordbbench
+  db_name: vectordbbench
+  password: password
+  host: localhost
+  maintenance_work_mem: 3GB
+  max_parallel_workers: 3
+
+
+elastichnsw:
+  # Common configurations
+  case_type: Performance1536D50K
+  drop_old: False
+  load: False
+  search_serial: True
+  search_concurrent: False
+  num_concurrency: 1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100
+  concurrency_duration: 30
+  k: 50
+  # HNSW configurations
+  m: 16
+  ef_construction: 128
+  ef_search: 128
+  # pgvector configurations
+  db_label: elastichnsw
+  host: localhost
+  port: 9200
