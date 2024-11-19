@@ -14,12 +14,7 @@ class ElasticConfig(DBConfig):
             "port": self.port
         }
 
-class ESElementType(str, Enum):
-    float = "float"  # 4 byte
-    byte = "byte"  # 1 byte, -128 to 127
-
 class ElasticIndexConfig(BaseModel, DBCaseConfig):
-    element_type: ESElementType = ESElementType.float
     index: IndexType = IndexType.ES_HNSW
 
     metric_type: MetricType | None = None
@@ -38,7 +33,7 @@ class ElasticIndexConfig(BaseModel, DBCaseConfig):
         params = {
             "type": "dense_vector",
             "index": True,
-            "element_type": self.element_type.value,
+            "element_type": "float",
             "similarity": self.parse_metric(),
             "index_options": {
                 "type": self.index.value,

@@ -45,7 +45,6 @@ class Elastic(VectorDB):
     @contextmanager
     def init(self) -> None:
         self.client = Elasticsearch(self.connection_url)
-        log.info(f"Connected to {self.client.info()['name']}")
 
         yield
         self.client = None
@@ -82,6 +81,7 @@ class Elastic(VectorDB):
                         self.vector_col_name: embedding
                     }
                 }
+
         try:
             bulk_insert_res = bulk(self.client, _gen_data())
             log.info(f"Inserted {bulk_insert_res} embeddings")
@@ -107,7 +107,20 @@ class Elastic(VectorDB):
             list[tuple[int, float]]: list of k most similar embeddings in (id, score) tuple to the query embedding.
 
         """
-        pass
+        query = {
+            "knn": {
+                "field": self.vector_col_name,
+                "query_vector": query,
+                "k": k
+            }
+        }
+
+        try:
+            response = self.client.search(index=self.index_name, query=query, size=k)
+            return [h["_source"][self.id_col_name] for h in response["hits"]["hits"]]
+        except Exception as e:
+            log.warning(f"Failed to search: {self.index_name} error: {str(e)}")
+            raise e
 
     def optimize(self):
         """optimize will be called between insertion and search in performance cases."""
