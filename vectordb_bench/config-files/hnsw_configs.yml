@@ -1,10 +1,11 @@
+# python -m vectordb_bench.cli.vectordbbench milvushnsw --config-file hnsw_configs.yml --uri http://10.244.8.231:19530
 milvushnsw:
   # Common configurations
   case_type: Performance1536D50K
   drop_old: True
   load: True
   search_serial: True
-  search_concurrent: False
+  search_concurrent: True
   num_concurrency: 1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100
   concurrency_duration: 30
   k: 50
@@ -16,13 +17,15 @@ milvushnsw:
   db_label: milvushnsw
   uri: http://localhost:19530
 
+
+# python -m vectordb_bench.cli.vectordbbench pgvectorhnsw --config-file hnsw_configs.yml --host 10.244.5.191
 pgvectorhnsw:
   # Common configurations
   case_type: Performance1536D50K
   drop_old: True
   load: True
   search_serial: True
-  search_concurrent: False
+  search_concurrent: True
   num_concurrency: 1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100
   concurrency_duration: 30
   k: 50
@@ -32,21 +35,21 @@ pgvectorhnsw:
   ef_search: 128
   # pgvector configurations
   db_label: pgvectorhnsw
-  user_name: vectordbbench
-  db_name: vectordbbench
+  user_name: postgres
+  db_name: postgres
   password: password
   host: localhost
-  maintenance_work_mem: 3GB
+  maintenance_work_mem: 64MB
   max_parallel_workers: 3
 
-
+# python -m vectordb_bench.cli.vectordbbench elastichnsw --config-file hnsw_configs.yml --host 10.244.5.164
 elastichnsw:
   # Common configurations
   case_type: Performance1536D50K
-  drop_old: False
-  load: False
+  drop_old: True
+  load: True
   search_serial: True
-  search_concurrent: False
+  search_concurrent: True
   num_concurrency: 1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100
   concurrency_duration: 30
   k: 50
