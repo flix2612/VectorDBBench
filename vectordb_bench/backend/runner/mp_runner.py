@@ -111,7 +111,7 @@ class MultiProcessingSearchRunner:
                         start = time.perf_counter()
                         all_count = sum([r.result()[0] for r in future_iter])
                         latencies = sum([r.result()[2] for r in future_iter], start=[])
-                        latency_p99 = np.percentile(latencies, 0.99)
+                        latency_p99 = np.percentile(latencies, 99)
                         cost = time.perf_counter() - start
 
                         qps = round(all_count / cost, 4)
