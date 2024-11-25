@@ -1,4 +1,5 @@
 import logging
+from asyncio import timeout
 from contextlib import contextmanager
 from typing import Iterable
 
@@ -119,8 +120,10 @@ class Elastic(VectorDB):
             response = self.client.search(index=self.index_name,
                                           query=query,
                                           size=k,
-                                          _source=[self.id_col_name])
-            return [h["_source"][self.id_col_name] for h in response["hits"]["hits"]]
+                                          _source=False,
+                                          docvalue_fields=[self.id_col_name],
+                                          stored_fields="_none_")
+            return [h["fields"][self.id_col_name][0] for h in response["hits"]["hits"]]
         except Exception as e:
             log.warning(f"Failed to search: {self.index_name} error: {str(e)}")
             raise e
