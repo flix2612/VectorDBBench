@@ -6,9 +6,9 @@ milvushnsw:
   load: True
   search_serial: True
   search_concurrent: True
-  num_concurrency: 1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100
+  num_concurrency: 1,5,10,15,20,25,30,35,40,45,50
   concurrency_duration: 30
-  k: 50
+  k: 100
   # HNSW configurations
   m: 16
   ef_construction: 128
@@ -26,9 +26,9 @@ pgvectorhnsw:
   load: True
   search_serial: True
   search_concurrent: True
-  num_concurrency: 1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100
+  num_concurrency: 1,5,10,15,20,25,30,35,40,45,50
   concurrency_duration: 30
-  k: 50
+  k: 100
   # HNSW configurations
   m: 16
   ef_construction: 128
@@ -42,7 +42,7 @@ pgvectorhnsw:
   maintenance_work_mem: 64MB
   max_parallel_workers: 3
 
-# python -m vectordb_bench.cli.vectordbbench elastichnsw --config-file hnsw_configs.yml --host 10.244.5.164
+# python -m vectordb_bench.cli.vectordbbench elastichnsw --config-file hnsw_configs.yml --host 10.244.5.133
 elastichnsw:
   # Common configurations
   case_type: Performance1536D50K
@@ -50,9 +50,9 @@ elastichnsw:
   load: True
   search_serial: True
   search_concurrent: True
-  num_concurrency: 1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100
+  num_concurrency: 1,5,10,15,20,25,30,35,40,45,50
   concurrency_duration: 30
-  k: 50
+  k: 100
   # HNSW configurations
   m: 16
   ef_construction: 128
