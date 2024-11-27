@@ -22,6 +22,7 @@ class IndexType(str, Enum):
     IVFSQ8 = "IVF_SQ8"
     Flat = "FLAT"
     AUTOINDEX = "AUTOINDEX"
+    ES_FLAT = "flat"
     ES_HNSW = "hnsw"
     ES_IVFFlat = "ivfflat"
     GPU_IVF_FLAT = "GPU_IVF_FLAT"

@@ -13,12 +13,9 @@ class ElasticConfig(DBConfig):
         }
 
 
-class HNSWConfig(BaseModel, DBCaseConfig):
-    index: IndexType = IndexType.ES_HNSW
-
+class ElasticIndexConfig(BaseModel):
+    index: IndexType
     metric_type: MetricType | None = None
-    efConstruction: int | None = None
-    m: int | None = None
 
     def parse_metric(self) -> str:
         if self.metric_type == MetricType.L2:
@@ -26,6 +23,13 @@ class HNSWConfig(BaseModel, DBCaseConfig):
         elif self.metric_type == MetricType.IP:
             return "dot_product"
         return "cosine"
+
+
+class HNSWConfig(ElasticIndexConfig, DBCaseConfig):
+    index: IndexType = IndexType.ES_HNSW
+
+    efConstruction: int | None = None
+    m: int | None = None
 
     def index_param(self) -> dict:
         params = {
@@ -45,17 +49,8 @@ class HNSWConfig(BaseModel, DBCaseConfig):
         pass
 
 
-class FLATConfig(BaseModel, DBCaseConfig):
-    index: IndexType = "flat"
-
-    metric_type: MetricType | None = None
-
-    def parse_metric(self) -> str:
-        if self.metric_type == MetricType.L2:
-            return "l2_norm"
-        elif self.metric_type == MetricType.IP:
-            return "dot_product"
-        return "cosine"
+class FLATConfig(ElasticIndexConfig, DBCaseConfig):
+    index: IndexType = IndexType.ES_FLAT
 
     def index_param(self) -> dict:
         params = {
@@ -64,7 +59,7 @@ class FLATConfig(BaseModel, DBCaseConfig):
             "element_type": "float",
             "similarity": self.parse_metric(),
             "index_options": {
-                "type": self.index,
+                "type": self.index.value,
             },
         }
         return params
@@ -76,5 +71,6 @@ class FLATConfig(BaseModel, DBCaseConfig):
 _elastic_case_config = {
     IndexType.HNSW: HNSWConfig,
     IndexType.ES_HNSW: HNSWConfig,
-    IndexType.Flat: FLATConfig
+    IndexType.Flat: FLATConfig,
+    IndexType.ES_FLAT: FLATConfig,
 }
