@@ -10,7 +10,7 @@ from vectordb_bench.cli.cli import CommonTypedDict, cli, click_parameter_decorat
 log = logging.getLogger(__name__)
 
 
-class ElasticTypesDict(CommonTypedDict):
+class ElasticTypedDict(CommonTypedDict):
     host: Annotated[
         str, click.option("--host", type=str, help="Elasticsearch host address", required=True)
     ]
@@ -19,14 +19,10 @@ class ElasticTypesDict(CommonTypedDict):
     ]
 
 
-class ElasticHNSWTypedDict(ElasticTypesDict, HNSWBaseRequiredTypedDict):
-    ...
-
-
 @cli.command()
-@click_parameter_decorators_from_typed_dict(ElasticHNSWTypedDict)
-def ElasticHNSW(**parameters: Unpack[ElasticHNSWTypedDict]):
-    from .config import ElasticConfig, ElasticIndexConfig
+@click_parameter_decorators_from_typed_dict(ElasticTypedDict)
+def ElasticFLAT(**parameters: Unpack[ElasticTypedDict]):
+    from .config import ElasticConfig, FLATConfig
 
     run(
         db=DB.Elastic,
@@ -34,7 +30,25 @@ def ElasticHNSW(**parameters: Unpack[ElasticHNSWTypedDict]):
             host=parameters["host"],
             port=parameters["port"],
         ),
-        db_case_config=ElasticIndexConfig(
+        db_case_config=FLATConfig(),
+        **parameters,
+    )
+
+class ElasticHNSWTypedDict(ElasticTypedDict, HNSWBaseRequiredTypedDict):
+    ...
+
+@cli.command()
+@click_parameter_decorators_from_typed_dict(ElasticHNSWTypedDict)
+def ElasticHNSW(**parameters: Unpack[ElasticHNSWTypedDict]):
+    from .config import ElasticConfig, HNSWConfig
+
+    run(
+        db=DB.Elastic,
+        db_config=ElasticConfig(
+            host=parameters["host"],
+            port=parameters["port"],
+        ),
+        db_case_config=HNSWConfig(
             efConstruction=parameters["ef_construction"],
             m=parameters["m"],
         ),

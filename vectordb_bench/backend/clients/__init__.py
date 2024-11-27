@@ -176,8 +176,8 @@ class DB(Enum):
             return AutoIndexConfig
 
         if self == DB.Elastic:
-            from .elastic.config import ElasticIndexConfig
-            return ElasticIndexConfig
+            from .elastic.config import _elastic_case_config
+            return _elastic_case_config.get(index_type)
 
         if self == DB.ElasticCloud:
             from .elastic_cloud.config import ElasticCloudIndexConfig

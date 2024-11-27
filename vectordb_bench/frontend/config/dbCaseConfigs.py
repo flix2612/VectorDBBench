@@ -1,11 +1,12 @@
-from enum import IntEnum, Enum
 import typing
+from enum import IntEnum, Enum
+
 from pydantic import BaseModel
+
 from vectordb_bench.backend.cases import CaseLabel, CaseType
 from vectordb_bench.backend.clients import DB
 from vectordb_bench.backend.clients.api import IndexType, MetricType
 from vectordb_bench.frontend.components.custom.getCustomConfig import get_custom_configs
-
 from vectordb_bench.models import CaseConfig, CaseConfigParamType
 
 MAX_STREAMLIT_INT = (1 << 53) - 1
@@ -324,6 +325,18 @@ CaseConfigParamInput_query_rescore = CaseConfigInput(
                                == IndexType.STREAMING_DISKANN.value,
 )
 
+CaseConfigParamInput_IndexType_Elastic = CaseConfigInput(
+    label=CaseConfigParamType.IndexType,
+    inputHelp="Select Index Type",
+    inputType=InputType.Option,
+    inputConfig={
+        "options": [
+            IndexType.HNSW.value,
+            IndexType.Flat.value,
+        ],
+    },
+)
+
 CaseConfigParamInput_IndexType_PgVector = CaseConfigInput(
     label=CaseConfigParamType.IndexType,
     inputHelp="Select Index Type",
@@ -393,6 +406,18 @@ CaseConfigParamInput_EFConstruction_Weaviate = CaseConfigInput(
         "max": 512,
         "value": 128,
     },
+)
+
+CaseConfigParamInput_EFConstruction_Elastic = CaseConfigInput(
+    label=CaseConfigParamType.EFConstruction,
+    inputType=InputType.Number,
+    inputConfig={
+        "min": 8,
+        "max": 512,
+        "value": 360,
+    },
+    isDisplayed=lambda config: config[CaseConfigParamType.IndexType]
+                               == IndexType.HNSW.value,
 )
 
 CaseConfigParamInput_EFConstruction_ES = CaseConfigInput(
@@ -489,6 +514,18 @@ CaseConfigParamInput_EFConstruction_PgVector = CaseConfigInput(
         "min": 8,
         "max": 1024,
         "value": 256,
+    },
+    isDisplayed=lambda config: config[CaseConfigParamType.IndexType]
+                               == IndexType.HNSW.value,
+)
+
+CaseConfigParamInput_M_Elastic = CaseConfigInput(
+    label=CaseConfigParamType.M,
+    inputType=InputType.Number,
+    inputConfig={
+        "min": 4,
+        "max": 64,
+        "value": 30,
     },
     isDisplayed=lambda config: config[CaseConfigParamType.IndexType]
                                == IndexType.HNSW.value,
@@ -940,8 +977,23 @@ WeaviatePerformanceConfig = [
     CaseConfigParamInput_EFConstruction_Weaviate,
     CaseConfigParamInput_EF_Weaviate,
 ]
+ElasticLoadConfig = [
+    CaseConfigParamInput_IndexType_Elastic,
+    CaseConfigParamInput_EFConstruction_Elastic,
+    CaseConfigParamInput_M_Elastic
+]
 
-ESLoadingConfig = [CaseConfigParamInput_EFConstruction_ES, CaseConfigParamInput_M_ES]
+ElasticPerformanceConfig = [
+    CaseConfigParamInput_IndexType_Elastic,
+    CaseConfigParamInput_EFConstruction_Elastic,
+    CaseConfigParamInput_M_Elastic,
+]
+
+ESLoadingConfig = [
+    CaseConfigParamInput_EFConstruction_ES,
+    CaseConfigParamInput_M_ES
+]
+
 ESPerformanceConfig = [
     CaseConfigParamInput_EFConstruction_ES,
     CaseConfigParamInput_M_ES,
@@ -1050,8 +1102,8 @@ CASE_CONFIG_MAP = {
     },
     # TODO: Change config
     DB.Elastic: {
-        CaseLabel.Load: ESLoadingConfig,
-        CaseLabel.Performance: ESPerformanceConfig,
+        CaseLabel.Load: ElasticLoadConfig,
+        CaseLabel.Performance: ElasticPerformanceConfig,
     },
     DB.ElasticCloud: {
         CaseLabel.Load: ESLoadingConfig,

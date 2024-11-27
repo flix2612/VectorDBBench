@@ -1,4 +1,4 @@
-from vectordb_bench.backend.clients.elastic.cli import ElasticHNSW
+from vectordb_bench.backend.clients.elastic.cli import ElasticHNSW, ElasticFLAT
 from ..backend.clients.pgvector.cli import PgVectorHNSW
 from ..backend.clients.pgvecto_rs.cli import PgVectoRSHNSW, PgVectoRSIVFFlat
 from ..backend.clients.pgvectorscale.cli import PgVectorScaleDiskAnn
@@ -26,6 +26,7 @@ cli.add_command(AWSOpenSearch)
 cli.add_command(PgVectorScaleDiskAnn)
 cli.add_command(PgDiskAnn)
 cli.add_command(ElasticHNSW)
+cli.add_command(ElasticFLAT)
 
 if __name__ == "__main__":
     cli()

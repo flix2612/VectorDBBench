@@ -5,7 +5,6 @@ from typing import Iterable
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 
-from .config import ElasticIndexConfig
 from ..api import VectorDB
 
 for logger in ("elastic", "elastic_transport"):
@@ -18,7 +17,7 @@ class Elastic(VectorDB):
     def __init__(self,
                  dim,
                  db_config,
-                 db_case_config: ElasticIndexConfig,
+                 db_case_config,
                  drop_old: bool = False):
 
         self.dim = dim
