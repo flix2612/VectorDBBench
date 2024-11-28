@@ -27,6 +27,7 @@ def ElasticFLAT(**parameters: Unpack[ElasticTypedDict]):
     run(
         db=DB.Elastic,
         db_config=ElasticConfig(
+            db_label=parameters["db_label"],
             host=parameters["host"],
             port=parameters["port"],
         ),
@@ -45,6 +46,7 @@ def ElasticHNSW(**parameters: Unpack[ElasticHNSWTypedDict]):
     run(
         db=DB.Elastic,
         db_config=ElasticConfig(
+            db_label=parameters["db_label"],
             host=parameters["host"],
             port=parameters["port"],
         ),
