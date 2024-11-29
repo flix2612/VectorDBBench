@@ -1,4 +1,4 @@
-FROM python:3.11-buster as builder-image
+FROM python:3.11-buster AS builder-image
 
 RUN apt-get update && apt-get install -y bash
 
@@ -13,6 +13,6 @@ COPY --from=builder-image /usr/local/lib/python3.11/site-packages /usr/local/lib
 
 WORKDIR /opt/code
 COPY . .
-ENV PYTHONPATH /opt/code
+ENV PYTHONPATH=/opt/code
 
 ENTRYPOINT ["python3", "-m", "vectordb_bench"]
