@@ -32,7 +32,7 @@ class Elastic(VectorDB):
         port = db_config.get("port")
         self.connection_url = f"http://{host}:{port}"
 
-        client = Elasticsearch(self.connection_url)
+        client = Elasticsearch(self.connection_url, timeout=600)
         log.info(f"Connected to {client.info()['name']}")
 
         if drop_old:
@@ -44,7 +44,7 @@ class Elastic(VectorDB):
 
     @contextmanager
     def init(self) -> None:
-        self.client = Elasticsearch(self.connection_url)
+        self.client = Elasticsearch(self.connection_url, timeout=600)
 
         yield
         self.client = None
@@ -129,7 +129,10 @@ class Elastic(VectorDB):
 
     def optimize(self):
         """optimize will be called between insertion and search in performance cases."""
-        pass
+        segments_info = self.client.indices.segments(index=self.index_name)
+        current_num_segments = segments_info['indices'][self.index_name]['shards']['0'][0]['num_committed_segments']
+        log.info(f"Merges {current_num_segments} segments into a single one")
+        self.client.indices.forcemerge(index=self.index_name, wait_for_completion=True, max_num_segments=1)
 
     def ready_to_load(self):
         """ready_to_load will be called before load in load cases."""
