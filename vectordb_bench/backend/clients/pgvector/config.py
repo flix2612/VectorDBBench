@@ -94,14 +94,13 @@ class PgVectorIndexConfig(BaseModel, DBCaseConfig):
         elif self.metric_type == MetricType.IP:
             return "max_inner_product"
         return "cosine_distance"
-    
+
     def parse_reranking_metric_fun_op(self) -> LiteralString:
         if self.reranking_metric == MetricType.L2:
             return "<->"
         elif self.reranking_metric == MetricType.IP:
             return "<#>"
         return "<=>"
-
 
     @abstractmethod
     def index_param(self) -> PgVectorIndexParam:
@@ -131,7 +130,7 @@ class PgVectorIndexConfig(BaseModel, DBCaseConfig):
 
     @staticmethod
     def _optionally_build_set_options(
-        set_mapping: Mapping[str, Any]
+            set_mapping: Mapping[str, Any]
     ) -> Sequence[dict[str, Any]]:
         """Walk through options, creating 'SET 'key1 = "value1";' list"""
         session_options = []
@@ -139,12 +138,41 @@ class PgVectorIndexConfig(BaseModel, DBCaseConfig):
             if value:
                 session_options.append(
                     {"parameter": {
-                            "setting_name": setting_name,
-                            "val": str(value),
-                        },
+                        "setting_name": setting_name,
+                        "val": str(value),
+                    },
                     }
                 )
         return session_options
+
+
+class PgVectorFlatConfig(PgVectorIndexConfig):
+    index: IndexType = IndexType.Flat
+    maintenance_work_mem: Optional[str] = None
+    max_parallel_workers: Optional[int] = None
+    quantization_type: Optional[str] = None
+    reranking: Optional[bool] = None
+    quantized_fetch_limit: Optional[int] = None
+    reranking_metric: Optional[str] = None
+
+    def index_param(self) -> PgVectorIndexParam:
+        return {
+            "metric": self.parse_metric(),
+            "index_type": self.index.value,
+            "index_creation_with_options": [],
+            "maintenance_work_mem": self.maintenance_work_mem,
+            "max_parallel_workers": self.max_parallel_workers,
+        }
+
+    def search_param(self) -> PgVectorSearchParam:
+        return {
+            "metric_fun_op": self.parse_metric_fun_op(),
+        }
+
+    def session_param(self) -> PgVectorSessionCommands:
+        return {
+            "session_options": []
+        }
 
 
 class PgVectorIVFFlatConfig(PgVectorIndexConfig):
@@ -211,7 +239,7 @@ class PgVectorHNSWConfig(PgVectorIndexConfig):
 
     m: int | None  # DETAIL:  Valid values are between "2" and "100".
     ef_construction: (
-        int | None
+            int | None
     )  # ef_construction must be greater than or equal to 2 * m
     ef_search: int | None
     index: IndexType = IndexType.ES_HNSW
@@ -253,7 +281,9 @@ class PgVectorHNSWConfig(PgVectorIndexConfig):
 
 
 _pgvector_case_config = {
-        IndexType.HNSW: PgVectorHNSWConfig,
-        IndexType.ES_HNSW: PgVectorHNSWConfig,
-        IndexType.IVFFlat: PgVectorIVFFlatConfig,
+    IndexType.Flat: PgVectorFlatConfig,
+    IndexType.ES_FLAT: PgVectorFlatConfig,
+    IndexType.HNSW: PgVectorHNSWConfig,
+    IndexType.ES_HNSW: PgVectorHNSWConfig,
+    IndexType.IVFFlat: PgVectorIVFFlatConfig,
 }

@@ -153,8 +153,6 @@ class BenchMarkRunner:
                     task_config=runner.config,
                 )
 
-                # drop_old = False if latest_runner and runner == latest_runner else config.DROP_OLD
-                # drop_old = config.DROP_OLD
                 drop_old = TaskStage.DROP_OLD in runner.config.stages
                 if latest_runner and runner == latest_runner:
                     drop_old = False

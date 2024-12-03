@@ -5,13 +5,12 @@ import pprint
 from contextlib import contextmanager
 from typing import Any, Generator, Optional, Tuple, Sequence
 
-import numpy as np
 import psycopg
 from pgvector.psycopg import register_vector
 from psycopg import Connection, Cursor, sql
 
-from ..api import VectorDB
-from .config import PgVectorConfigDict, PgVectorIndexConfig, PgVectorHNSWConfig
+from .config import PgVectorConfigDict, PgVectorIndexConfig
+from ..api import VectorDB, IndexType
 
 log = logging.getLogger(__name__)
 
@@ -229,6 +228,10 @@ class PgVector(VectorDB):
         assert self.conn is not None, "Connection is not initialized"
         assert self.cursor is not None, "Cursor is not initialized"
         log.info(f"{self.name} client create index : {self._index_name}")
+
+        if self.case_config.index_param()["index_type"] == IndexType.Flat.value:
+            # pgvector uses knn search by default
+            return
 
         index_param = self.case_config.index_param()
         self._set_parallel_index_build_param()

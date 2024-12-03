@@ -343,6 +343,7 @@ CaseConfigParamInput_IndexType_PgVector = CaseConfigInput(
     inputType=InputType.Option,
     inputConfig={
         "options": [
+            IndexType.Flat.value,
             IndexType.HNSW.value,
             IndexType.IVFFlat.value,
         ],

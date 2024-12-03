@@ -109,7 +109,33 @@ class PgVectorTypedDict(CommonTypedDict):
         )
     ]
 
-    
+
+
+@cli.command()
+@click_parameter_decorators_from_typed_dict(PgVectorTypedDict)
+def PgVectorFlat(
+    **parameters: Unpack[PgVectorTypedDict],
+):
+    from .config import PgVectorConfig, PgVectorFlatConfig
+
+    run(
+        db=DB.PgVector,
+        db_config=PgVectorConfig(
+            db_label=parameters["db_label"],
+            user_name=SecretStr(parameters["user_name"]),
+            password=SecretStr(parameters["password"]),
+            host=parameters["host"],
+            db_name=parameters["db_name"],
+        ),
+        db_case_config=PgVectorFlatConfig(
+            metric_type=None,
+            quantization_type=parameters["quantization_type"],
+            reranking=parameters["reranking"],
+            reranking_metric=parameters["reranking_metric"],
+            quantized_fetch_limit=parameters["quantized_fetch_limit"],
+        ),
+        **parameters,
+    )
 
 class PgVectorIVFFlatTypedDict(PgVectorTypedDict, IVFFlatTypedDict):
     ...
