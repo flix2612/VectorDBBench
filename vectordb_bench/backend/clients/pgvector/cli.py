@@ -1,11 +1,11 @@
-from typing import Annotated, Optional, TypedDict, Unpack
+import os
+from typing import Annotated, Optional, Unpack
 
 import click
-import os
 from pydantic import SecretStr
 
+from vectordb_bench.backend.clients import DB
 from vectordb_bench.backend.clients.api import MetricType
-
 from ....cli.cli import (
     CommonTypedDict,
     HNSWFlavor1,
@@ -15,7 +15,6 @@ from ....cli.cli import (
     get_custom_case_config,
     run,
 )
-from vectordb_bench.backend.clients import DB
 
 
 def set_default_quantized_fetch_limit(ctx, param, value):
@@ -25,6 +24,7 @@ def set_default_quantized_fetch_limit(ctx, param, value):
         default_value = ctx.params["ef_search"] if ctx.command.name == "pgvectorhnsw" else 100
         return default_value
     return value
+
 
 class PgVectorTypedDict(CommonTypedDict):
     user_name: Annotated[
@@ -52,9 +52,9 @@ class PgVectorTypedDict(CommonTypedDict):
             "--maintenance-work-mem",
             type=str,
             help="Sets the maximum memory to be used for maintenance operations (index creation). "
-            "Can be entered as string with unit like '64GB' or as an integer number of KB."
-            "This will set the parameters: max_parallel_maintenance_workers,"
-            " max_parallel_workers & table(parallel_workers)",
+                 "Can be entered as string with unit like '64GB' or as an integer number of KB."
+                 "This will set the parameters: max_parallel_maintenance_workers,"
+                 " max_parallel_workers & table(parallel_workers)",
             required=False,
         ),
     ]
@@ -110,14 +110,12 @@ class PgVectorTypedDict(CommonTypedDict):
     ]
 
 
-
 @cli.command()
 @click_parameter_decorators_from_typed_dict(PgVectorTypedDict)
 def PgVectorFlat(
-    **parameters: Unpack[PgVectorTypedDict],
+        **parameters: Unpack[PgVectorTypedDict],
 ):
     from .config import PgVectorConfig, PgVectorFlatConfig
-
     run(
         db=DB.PgVector,
         db_config=PgVectorConfig(
@@ -128,6 +126,8 @@ def PgVectorFlat(
             db_name=parameters["db_name"],
         ),
         db_case_config=PgVectorFlatConfig(
+            maintenance_work_mem=parameters["maintenance_work_mem"],
+            max_parallel_workers=parameters["max_parallel_workers"],
             metric_type=None,
             quantization_type=parameters["quantization_type"],
             reranking=parameters["reranking"],
@@ -137,6 +137,7 @@ def PgVectorFlat(
         **parameters,
     )
 
+
 class PgVectorIVFFlatTypedDict(PgVectorTypedDict, IVFFlatTypedDict):
     ...
 
@@ -144,7 +145,7 @@ class PgVectorIVFFlatTypedDict(PgVectorTypedDict, IVFFlatTypedDict):
 @cli.command()
 @click_parameter_decorators_from_typed_dict(PgVectorIVFFlatTypedDict)
 def PgVectorIVFFlat(
-    **parameters: Unpack[PgVectorIVFFlatTypedDict],
+        **parameters: Unpack[PgVectorIVFFlatTypedDict],
 ):
     from .config import PgVectorConfig, PgVectorIVFFlatConfig
 
@@ -162,6 +163,8 @@ def PgVectorIVFFlat(
             metric_type=None,
             lists=parameters["lists"],
             probes=parameters["probes"],
+            maintenance_work_mem=parameters["maintenance_work_mem"],
+            max_parallel_workers=parameters["max_parallel_workers"],
             quantization_type=parameters["quantization_type"],
             reranking=parameters["reranking"],
             reranking_metric=parameters["reranking_metric"],
@@ -178,7 +181,7 @@ class PgVectorHNSWTypedDict(PgVectorTypedDict, HNSWFlavor1):
 @cli.command()
 @click_parameter_decorators_from_typed_dict(PgVectorHNSWTypedDict)
 def PgVectorHNSW(
-    **parameters: Unpack[PgVectorHNSWTypedDict],
+        **parameters: Unpack[PgVectorHNSWTypedDict],
 ):
     from .config import PgVectorConfig, PgVectorHNSWConfig
 
