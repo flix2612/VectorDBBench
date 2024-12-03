@@ -17,6 +17,9 @@ log = logging.getLogger(__name__)
 
 
 class Elastic(VectorDB):
+
+    client: Elasticsearch | None = None
+
     def __init__(self,
                  dim,
                  db_config,
@@ -48,8 +51,11 @@ class Elastic(VectorDB):
     @contextmanager
     def init(self) -> None:
         self.client = Elasticsearch(self.connection_url, timeout=600)
-        yield
-        self.client.close()
+
+        try:
+            yield
+        finally:
+            self.client.close()
 
     def _create_indice(self, client) -> None:
         mappings = {
