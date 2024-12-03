@@ -1,3 +1,5 @@
+"""Wrapper around the Elasticsearch vector database over VectorDB"""
+
 import logging
 from contextlib import contextmanager
 from typing import Iterable
@@ -41,6 +43,7 @@ class Elastic(VectorDB):
                 client.indices.delete(index=self.index_name)
                 log.info(f"Deleted old index {self.index_name}")
             self._create_indice(client)
+        client.close()
 
     @contextmanager
     def init(self) -> None:
@@ -136,4 +139,4 @@ class Elastic(VectorDB):
 
     def ready_to_load(self):
         """ready_to_load will be called before load in load cases."""
-        pass
+        raise NotImplementedError("Not used for Benchmarking")
