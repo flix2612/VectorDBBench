@@ -310,9 +310,6 @@ class PgVector(VectorDB):
                     copy.write_row((row, embeddings[i]))
             self.conn.commit()
 
-            if kwargs.get("last_batch"):
-                self._post_insert()
-
             return len(metadata), None
         except Exception as e:
             log.warning(
