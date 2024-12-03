@@ -17,7 +17,6 @@ log = logging.getLogger(__name__)
 
 
 class Elastic(VectorDB):
-
     client: Elasticsearch | None = None
 
     def __init__(self,
@@ -45,7 +44,7 @@ class Elastic(VectorDB):
             if index_exists:
                 client.indices.delete(index=self.index_name)
                 log.info(f"Deleted old index {self.index_name}")
-            self._create_indice(client)
+            self._create_index(client)
         client.close()
 
     @contextmanager
@@ -57,7 +56,7 @@ class Elastic(VectorDB):
         finally:
             self.client.close()
 
-    def _create_indice(self, client) -> None:
+    def _create_index(self, client) -> None:
         mappings = {
             "properties": {
                 self.id_col_name: {"type": "integer", "store": True},
@@ -91,7 +90,6 @@ class Elastic(VectorDB):
 
         try:
             bulk_insert_res = bulk(self.client, _gen_data())
-            log.info(f"Inserted {bulk_insert_res} embeddings")
             return bulk_insert_res[0], None
         except Exception as e:
             log.warning(f"Failed to insert data: {self.index_name} error: {str(e)}")
