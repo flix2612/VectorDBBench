@@ -97,17 +97,6 @@ class Elastic(VectorDB):
             k: int = 100,
             filters: dict | None = None,
     ) -> list[int]:
-        """Get k most similar embeddings to query vector.
-
-        Args:
-            query(list[float]): query embedding to look up documents similar to.
-            k(int): Number of most similar embeddings to return. Defaults to 100.
-            filters(dict, optional): filtering expression to filter the data while searching.
-
-        Returns:
-            list[tuple[int, float]]: list of k most similar embeddings in (id, score) tuple to the query embedding.
-
-        """
         query = {
             "knn": {
                 "field": self.vector_col_name,
@@ -129,12 +118,13 @@ class Elastic(VectorDB):
             raise e
 
     def optimize(self):
-        """optimize will be called between insertion and search in performance cases."""
+        self._merge_segments()
+
+    def _merge_segments(self):
         segments_info = self.client.indices.segments(index=self.index_name)
         current_num_segments = segments_info['indices'][self.index_name]['shards']['0'][0]['num_committed_segments']
         log.info(f"Merges {current_num_segments} segments into a single one")
         self.client.indices.forcemerge(index=self.index_name, wait_for_completion=True, max_num_segments=1)
 
     def ready_to_load(self):
-        """ready_to_load will be called before load in load cases."""
         raise NotImplementedError("Not used for Benchmarking")
