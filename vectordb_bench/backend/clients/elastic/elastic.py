@@ -48,10 +48,8 @@ class Elastic(VectorDB):
     @contextmanager
     def init(self) -> None:
         self.client = Elasticsearch(self.connection_url, timeout=600)
-
         yield
-        self.client = None
-        del (self.client)
+        self.client.close()
 
     def _create_indice(self, client) -> None:
         mappings = {
