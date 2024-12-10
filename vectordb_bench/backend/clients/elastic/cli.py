@@ -5,7 +5,7 @@ import click
 
 from vectordb_bench.backend.clients import DB
 from vectordb_bench.cli.cli import CommonTypedDict, cli, click_parameter_decorators_from_typed_dict, run, \
-    HNSWBaseRequiredTypedDict
+    HNSWFlavorElastic
 
 log = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ def ElasticFLAT(**parameters: Unpack[ElasticTypedDict]):
         **parameters,
     )
 
-class ElasticHNSWTypedDict(ElasticTypedDict, HNSWBaseRequiredTypedDict):
+class ElasticHNSWTypedDict(ElasticTypedDict, HNSWFlavorElastic):
     ...
 
 @cli.command()
@@ -53,6 +53,7 @@ def ElasticHNSW(**parameters: Unpack[ElasticHNSWTypedDict]):
         db_case_config=HNSWConfig(
             efConstruction=parameters["ef_construction"],
             m=parameters["m"],
+            num_candidates=parameters["num_candidates"],
         ),
         **parameters,
     )

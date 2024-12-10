@@ -24,10 +24,14 @@ class ElasticIndexConfig(BaseModel):
             return "dot_product"
         return "cosine"
 
+    def search_param(self):
+        pass
+
 
 class HNSWConfig(ElasticIndexConfig, DBCaseConfig):
     index: IndexType = IndexType.ES_HNSW
 
+    num_candidates: int | None = None
     efConstruction: int | None = None
     m: int | None = None
 
@@ -46,7 +50,9 @@ class HNSWConfig(ElasticIndexConfig, DBCaseConfig):
         return params
 
     def search_param(self) -> dict:
-        pass
+        return {
+            "num_candidates": self.num_candidates,
+        }
 
 
 class FLATConfig(ElasticIndexConfig, DBCaseConfig):
@@ -65,7 +71,7 @@ class FLATConfig(ElasticIndexConfig, DBCaseConfig):
         return params
 
     def search_param(self) -> dict:
-        pass
+        return {}
 
 
 _elastic_case_config = {

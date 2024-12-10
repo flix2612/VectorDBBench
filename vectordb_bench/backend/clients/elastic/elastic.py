@@ -105,7 +105,8 @@ class Elastic(VectorDB):
             "knn": {
                 "field": self.vector_col_name,
                 "query_vector": query,
-                "k": k
+                "k": k,
+                **self.case_config.search_param()
             }
         }
 

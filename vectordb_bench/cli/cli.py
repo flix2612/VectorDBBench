@@ -429,6 +429,11 @@ class HNSWFlavor3(HNSWBaseRequiredTypedDict):
         Optional[int], click.option("--ef-search", type=int, help="hnsw ef-search", required=True)
     ]
 
+class HNSWFlavorElastic(HNSWBaseRequiredTypedDict):
+    num_candidates: Annotated[
+        Optional[int], click.option("--num-candidates", type=int, help="hnsw num-candidates", required=True)
+    ]
+
 
 class IVFFlatTypedDict(TypedDict):
     lists: Annotated[

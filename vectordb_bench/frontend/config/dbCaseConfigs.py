@@ -532,6 +532,18 @@ CaseConfigParamInput_M_Elastic = CaseConfigInput(
                                == IndexType.HNSW.value,
 )
 
+CaseConfigParamInput_NumCandidates_Elastic = CaseConfigInput(
+    label=CaseConfigParamType.numCandidates,
+    inputType=InputType.Number,
+    inputConfig={
+        "min": 1,
+        "max": 10000,
+        "value": 100,
+    },
+    isDisplayed=lambda config: config[CaseConfigParamType.IndexType]
+                               == IndexType.HNSW.value,
+)
+
 CaseConfigParamInput_M_ES = CaseConfigInput(
     label=CaseConfigParamType.M,
     inputType=InputType.Number,
@@ -981,13 +993,14 @@ WeaviatePerformanceConfig = [
 ElasticLoadConfig = [
     CaseConfigParamInput_IndexType_Elastic,
     CaseConfigParamInput_EFConstruction_Elastic,
-    CaseConfigParamInput_M_Elastic
+    CaseConfigParamInput_M_Elastic,
 ]
 
 ElasticPerformanceConfig = [
     CaseConfigParamInput_IndexType_Elastic,
     CaseConfigParamInput_EFConstruction_Elastic,
     CaseConfigParamInput_M_Elastic,
+    CaseConfigParamInput_NumCandidates_Elastic
 ]
 
 ESLoadingConfig = [
