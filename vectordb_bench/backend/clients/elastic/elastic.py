@@ -36,7 +36,7 @@ class Elastic(VectorDB):
         port = db_config.get("port")
         self.connection_url = f"http://{host}:{port}"
 
-        client = Elasticsearch(self.connection_url, timeout=600)
+        client = Elasticsearch(self.connection_url, timeout=3600)
         log.info(f"Connected to {client.info()['name']}")
 
         if drop_old:
