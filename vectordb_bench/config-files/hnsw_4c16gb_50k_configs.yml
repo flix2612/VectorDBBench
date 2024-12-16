@@ -1,0 +1,33 @@
+baseconfigs: &baseconfigs
+  # benchmark configs ---------------
+  case_type: Performance1536D50K
+  drop_old: True
+  load: True
+  search_serial: True
+  search_concurrent: True
+  num_concurrency: 1,4,8,12,16
+  concurrency_duration: 30
+  # db configs ----------------------
+  k: 100
+  m: 16
+  ef_construction: 128
+  ef_search: &ef_search 128
+
+milvushnsw:
+  <<: *baseconfigs
+  db_label: milvushnsw_4c16gb_50k
+
+pgvectorhnsw:
+  <<: *baseconfigs
+  db_label: pgvectorhnsw_4c16gb_50k
+  user_name: postgres
+  db_name: postgres
+  password: password
+  maintenance_work_mem: 800MB
+  max_parallel_workers: 3
+
+elastichnsw:
+  <<: *baseconfigs
+  num_candidates: *ef_search
+  db_label: elastichnsw_4c16gb_50k
+  port: 9200

@@ -1,0 +1,29 @@
+baseconfigs: &baseconfigs
+  # benchmark configs ---------------
+  case_type: Performance1536D50K
+  drop_old: True
+  load: True
+  search_serial: True
+  search_concurrent: True
+  num_concurrency: 1,4,8,12,16
+  concurrency_duration: 30
+  # db configs ----------------------
+  k: 100
+
+milvusflat:
+  <<: *baseconfigs
+  db_label: milvusflat_4c16gb_50k
+
+pgvectorflat:
+  <<: *baseconfigs
+  db_label: pgvectorflat_4c16gb_50k
+  user_name: postgres
+  db_name: postgres
+  password: password
+  maintenance_work_mem: 800MB
+  max_parallel_workers: 3
+
+elasticflat:
+  <<: *baseconfigs
+  db_label: elasticflat_4c16gb_50k
+  port: 9200
