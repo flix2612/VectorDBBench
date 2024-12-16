@@ -52,8 +52,7 @@ class Milvus(VectorDB):
 
             col = Collection(
                 name=self.collection_name,
-                schema=CollectionSchema(fields),
-                consistency_level="Session",
+                schema=CollectionSchema(fields)
             )
 
             col.create_index(
@@ -137,7 +136,6 @@ class Milvus(VectorDB):
 
         insert_count = 0
         try:
-            log.info(f"Inserting {len(embeddings)} embeddings")
             insert_data = [metadata, metadata, embeddings]
             res = self.col.insert(insert_data)
             insert_count = len(res.primary_keys)

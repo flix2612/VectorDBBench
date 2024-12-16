@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 
 class Elastic(VectorDB):
     client: Elasticsearch | None = None
+    timeout = 3600
 
     def __init__(self,
                  dim,
@@ -36,7 +37,7 @@ class Elastic(VectorDB):
         port = db_config.get("port")
         self.connection_url = f"http://{host}:{port}"
 
-        client = Elasticsearch(self.connection_url, timeout=3600)
+        client = Elasticsearch(self.connection_url, timeout=self.timeout)
         log.info(f"Connected to {client.info()['name']}")
 
         if drop_old:
@@ -49,7 +50,7 @@ class Elastic(VectorDB):
 
     @contextmanager
     def init(self) -> None:
-        self.client = Elasticsearch(self.connection_url, timeout=600)
+        self.client = Elasticsearch(self.connection_url, timeout=self.timeout)
 
         try:
             yield
