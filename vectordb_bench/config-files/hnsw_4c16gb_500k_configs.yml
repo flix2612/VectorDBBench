@@ -5,13 +5,13 @@ baseconfigs: &baseconfigs
   load: True
   search_serial: True
   search_concurrent: True
-  num_concurrency: 1,4,8,12,16
+  num_concurrency: 1,2,4,6,8,10,12,14,16,18,20,22,24
   concurrency_duration: 30
   # db configs ----------------------
-  k: 100
+  k: 15
   m: 16
-  ef_construction: 128
-  ef_search: &ef_search 128
+  ef_construction: 64
+  ef_search: &ef_search 40
 
 milvushnsw:
   <<: *baseconfigs
@@ -23,8 +23,8 @@ pgvectorhnsw:
   user_name: postgres
   db_name: postgres
   password: password
-  maintenance_work_mem: 800MB
-  max_parallel_workers: 3
+  maintenance_work_mem: 1GB
+  max_parallel_workers: 4
 
 elastichnsw:
   <<: *baseconfigs
