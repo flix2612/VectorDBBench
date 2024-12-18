@@ -58,7 +58,13 @@ class Elastic(VectorDB):
             self.client.close()
 
     def _create_index(self, client) -> None:
+        settings = {
+            "index": {
+                "refresh_interval": -1
+            }
+        }
         mappings = {
+            "_source": {"excludes": ["vector"]},
             "properties": {
                 self.id_col_name: {"type": "integer", "store": True},
                 self.vector_col_name: {
@@ -67,7 +73,7 @@ class Elastic(VectorDB):
             }
         }
         try:
-            client.indices.create(index=self.index_name, mappings=mappings)
+            client.indices.create(index=self.index_name, mappings=mappings, settings=settings)
             log.info(f"Created index {self.index_name}")
         except Exception as e:
             log.error(f"Failed creating index {self.index_name}: {e}")
